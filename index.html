@@ -9,6 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   :root{
     --bg-deep:#E9CAC7;
@@ -298,6 +299,7 @@
       <button class="btn" id="btn-checkin">Ya llegué — hacer check-in</button>
       <button class="btn secondary small" id="btn-nueva-cita" style="margin-left:8px;">Reservar otra cita</button>
       <div><button class="btn secondary small" id="btn-agregar-calendario" style="margin-top:12px;">📅 Agregar recordatorio a mi calendario</button></div>
+      <div><a href="#" id="btn-whatsapp-confirmar" target="_blank" rel="noopener" class="btn secondary small" style="margin-top:8px; display:inline-block; text-decoration:none;">📲 Recibir confirmación por WhatsApp</a></div>
       <div><a href="#" id="btn-cancelar-confirmado" style="font-size:0.78rem; color:var(--rose-dark); display:inline-block; margin-top:14px;">Cancelar esta cita</a></div>
       <p class="note" id="conf-auto-return" style="margin-top:10px;"></p>
     </div>
@@ -570,6 +572,12 @@ const firebaseConfig = {
   appId: "1:895355336849:web:1a6c5192bf3f3f80bde730"
 };
 firebase.initializeApp(firebaseConfig);
+
+// ---------- EmailJS (confirmación de cita por correo) ----------
+emailjs.init({ publicKey: 'TP2wpzYa9TFR2mjxU' });
+const EMAILJS_SERVICE_ID = 'service_pwktaba';
+const EMAILJS_TEMPLATE_ID = 'template_jm35zux';
+const NOMBRE_NEGOCIO = 'Jireh Estética';
 const db = firebase.firestore();
 const auth = firebase.auth();
 
@@ -835,6 +843,7 @@ function renderForm(){
 document.getElementById('btn-confirmar').addEventListener('click', async ()=>{
   const nombre = document.getElementById('in-nombre').value.trim() || 'Cliente sin nombre';
   const telefono = document.getElementById('in-telefono').value.trim() || '—';
+  const correo = document.getElementById('in-correo').value.trim();
   const svc = svcById(booking.service);
   const btn = document.getElementById('btn-confirmar');
   btn.disabled = true; btn.textContent = 'Guardando...';
@@ -850,11 +859,26 @@ document.getElementById('btn-confirmar').addEventListener('click', async ()=>{
       visitas: firebase.firestore.FieldValue.increment(1)
     }, {merge:true});
 
+    const detalleTexto = `${svc.name} · ${formatFecha(booking.date)} ${SLOT_LABELS[booking.start]}`;
     document.getElementById('conf-nombre').textContent = nombre;
-    document.getElementById('conf-detalle').textContent =
-      `${svc.name} · ${formatFecha(booking.date)} ${SLOT_LABELS[booking.start]}`;
+    document.getElementById('conf-detalle').textContent = detalleTexto;
     goToStep('confirmado');
     iniciarRegresoAutomatico();
+
+    if(correo){
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_name: nombre,
+        to_email: correo,
+        service_name: svc.name,
+        appointment_date: formatFecha(booking.date),
+        appointment_time: SLOT_LABELS[booking.start],
+        business_name: NOMBRE_NEGOCIO
+      }).catch(err=>console.error('EmailJS error:', err));
+    }
+
+    const mensajeWhatsapp = `Hola! Confirmo mi cita en ${NOMBRE_NEGOCIO}: ${detalleTexto}. A nombre de ${nombre}.`;
+    document.getElementById('btn-whatsapp-confirmar').href =
+      'https://wa.me/?text=' + encodeURIComponent(mensajeWhatsapp);
   } catch(err){
     alert('No se pudo guardar la cita. Intenta de nuevo.');
     console.error(err);
