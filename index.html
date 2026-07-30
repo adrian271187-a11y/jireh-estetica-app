@@ -696,6 +696,17 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
   });
 });
 
+function base64ToBlobUrl(dataUri){
+  const [header, base64] = dataUri.split(',');
+  const mimeMatch = header.match(/data:(.*);base64/);
+  const mime = mimeMatch ? mimeMatch[1] : 'video/mp4';
+  const binario = atob(base64);
+  const bytes = new Uint8Array(binario.length);
+  for(let i=0; i<binario.length; i++) bytes[i] = binario.charCodeAt(i);
+  const blob = new Blob([bytes], {type: mime});
+  return URL.createObjectURL(blob);
+}
+
 function renderGaleria(){
   const grid = document.getElementById('gallery-grid');
   if(grid.dataset.rendered) return;
@@ -719,10 +730,11 @@ function renderGaleria(){
     grid.appendChild(img);
   });
   GALLERY_VIDEOS.forEach(src=>{
+    const blobUrl = base64ToBlobUrl(src);
     const wrap = document.createElement('div');
     wrap.className = 'video-thumb';
     const vid = document.createElement('video');
-    vid.src = src;
+    vid.src = blobUrl;
     vid.muted = true;
     vid.preload = 'metadata';
     wrap.appendChild(vid);
@@ -732,9 +744,10 @@ function renderGaleria(){
       lbImg.src = '';
       const lbVideo = document.getElementById('lightbox-video');
       lbVideo.style.display = 'block';
-      lbVideo.src = src;
+      lbVideo.src = blobUrl;
+      lbVideo.load();
       lbVideo.currentTime = 0;
-      lbVideo.play();
+      lbVideo.play().catch(err=>console.error('Video play error:', err));
       document.getElementById('lightbox').classList.add('open');
     });
     grid.appendChild(wrap);
