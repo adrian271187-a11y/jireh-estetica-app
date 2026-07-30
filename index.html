@@ -92,7 +92,7 @@
   }
 
   /* ---- Services grid ---- */
-  .svc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .svc-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:12px; }
   @media (max-width:420px){ .svc-grid{ grid-template-columns:1fr; } }
   .svc-category-header{ grid-column:1/-1; font-family:'Cormorant Garamond'; font-size:1.15rem; color:var(--ivory); margin:14px 0 -2px; }
   .svc-category-header:first-child{ margin-top:0; }
@@ -247,7 +247,7 @@
 </div>
 
 <!-- ===================== CLIENTE ===================== -->
-<div class="screen active" id="screen-cliente">
+<div class="screen active wide" id="screen-cliente">
 
   <div id="step-servicio">
     <h2>1. Elige tu servicio</h2>
