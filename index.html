@@ -640,7 +640,7 @@ auth.onAuthStateChanged(user=>{
 
 document.getElementById('admin-login-btn').addEventListener('click', async ()=>{
   const usuario = document.getElementById('admin-email').value.trim();
-  const email = usuario.includes('@') ? usuario : (usuario.toLowerCase() + '@TNestetica.local');
+  const email = usuario.includes('@') ? usuario : (usuario.toLowerCase() + '@jirehestetica.local');
   const pass = document.getElementById('admin-password').value;
   const errorEl = document.getElementById('admin-login-error');
   errorEl.textContent = '';
