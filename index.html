@@ -384,7 +384,7 @@
     <label>Usuario</label>
     <input id="admin-email" type="text" placeholder="tu usuario" autocapitalize="off" autocomplete="username">
     <label>Contraseña</label>
-    <input id="admin-password" type="password" placeholder="••••••••">
+    <input id="admin-password" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')document.getElementById('admin-login-btn').click()">
     <button class="btn" id="admin-login-btn" style="width:100%;">Iniciar sesión</button>
     <p class="note" id="admin-login-error" style="color:var(--rose-dark);"></p>
   </div>
