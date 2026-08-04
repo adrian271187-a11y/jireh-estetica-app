@@ -1133,14 +1133,14 @@ document.getElementById('btn-buscar-citas').addEventListener('click', async ()=>
       if(!confirm('¿Cancelar esta cita?')) return;
       await db.collection('appointments').doc(doc.id).delete();
       // Aviso a Tatiana
-      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        to_name: 'Tatiana',
+      emailjs.send(EMAILJS_SERVICE_ID, 'template_y3zvu9a', {
         to_email: 'adrian271187@gmail.com',
+        tipo: '❌ Cita CANCELADA (por cliente)',
+        cliente_nombre: d.name || d.nombre || '—',
+        cliente_tel: d.tel || '—',
         service_name: svc ? svc.name : (d.service || '—'),
         appointment_date: d.day || d.date || d.fecha || '—',
-        appointment_time: SLOT_LABELS[d.start] || d.start || d.hora || '—',
-        business_name: '❌ Cita CANCELADA (por cliente) de: ' + (d.name||d.nombre||'—') + (d.tel ? ' · Tel: ' + d.tel : ''),
-        email: 'adrian271187@gmail.com'
+        appointment_time: SLOT_LABELS[d.start] || d.start || d.hora || '—'
       }).catch(err=>console.error('EmailJS cancelar tel error:', err));
       document.getElementById('btn-buscar-citas').click();
     });
@@ -1364,14 +1364,14 @@ function renderAdmin(){
             }).catch(err=>console.error('EmailJS error:', err));
           }
           // Aviso a Tatiana
-          emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-            to_name: 'Tatiana',
+          emailjs.send(EMAILJS_SERVICE_ID, 'template_y3zvu9a', {
             to_email: 'adrian271187@gmail.com',
+            tipo: '✅ Cita CONFIRMADA',
+            cliente_nombre: a.name || '—',
+            cliente_tel: a.tel || '—',
             service_name: svc.name,
             appointment_date: formatFechaCorta(a.fecha),
-            appointment_time: SLOT_LABELS[a.start],
-            business_name: '✅ Cita CONFIRMADA para: ' + a.name + (a.tel ? ' · Tel: ' + a.tel : ''),
-            email: 'adrian271187@gmail.com'
+            appointment_time: SLOT_LABELS[a.start]
           }).catch(err=>console.error('EmailJS aviso error:', err));
         } catch(err){
           alert('No se pudo confirmar la cita.');
@@ -1418,14 +1418,14 @@ function renderAdmin(){
       if(!confirm(`¿Cancelar la cita de ${a.name}?`)) return;
       await db.collection('appointments').doc(a.id).delete();
       // Aviso a Tatiana
-      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        to_name: 'Tatiana',
+      emailjs.send(EMAILJS_SERVICE_ID, 'template_y3zvu9a', {
         to_email: 'adrian271187@gmail.com',
+        tipo: '❌ Cita CANCELADA',
+        cliente_nombre: a.name || '—',
+        cliente_tel: a.tel || '—',
         service_name: svc ? svc.name : (a.service || '—'),
         appointment_date: a.fecha || a.day || '—',
-        appointment_time: SLOT_LABELS[a.start] || a.start || '—',
-        business_name: '❌ Cita CANCELADA de: ' + a.name + (a.tel ? ' · Tel: ' + a.tel : ''),
-        email: 'adrian271187@gmail.com'
+        appointment_time: SLOT_LABELS[a.start] || a.start || '—'
       }).catch(err=>console.error('EmailJS cancelar error:', err));
     });
     accionesTd.appendChild(cancelBtn);
