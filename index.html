@@ -748,7 +748,10 @@ db.collection('appointments').onSnapshot(snap=>{
   snap.forEach(doc=>{
     const d = doc.data();
     if(!grouped[d.day]) grouped[d.day] = [];
-    grouped[d.day].push({id:doc.id, start:d.start, service:d.service, name:d.name, tel:d.tel, correo:d.correo, estado:d.estado || 'confirmada'});
+   const dia = d.day || d.date;
+const startVal = typeof d.start === 'number' ? d.start : SLOT_LABELS.indexOf(d.start);
+if(!grouped[dia]) grouped[dia] = [];
+grouped[dia].push({id:doc.id, start:startVal, service:d.service||d.serviceName, name:d.name||d.nombre, tel:d.tel||d.telefono, correo:d.correo, estado:d.estado||'pendiente'});
   });
   appointments = grouped;
   if(isScreenActive('screen-cliente')){
