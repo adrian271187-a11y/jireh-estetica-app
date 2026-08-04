@@ -1026,6 +1026,8 @@ document.getElementById('btn-confirmar').addEventListener('click', async ()=>{
       ultimo: svc.name,
       visitas: firebase.firestore.FieldValue.increment(1)
     }, {merge:true});
+    // Aviso al administrador
+    try{await emailjs.send(EMAILJS_SERVICE_ID, 'template_y3zvu9a', {to_email:'adrian22-11@hotmail.com',tipo:'🆕 Nueva cita PENDIENTE de confirmación',cliente_nombre:nombre,cliente_tel:telefono,service_name:svc.name,appointment_date:formatFecha(booking.date),appointment_time:SLOT_LABELS[booking.start]});}catch(e){console.error('EmailJS aviso error:',e);}
 
     const detalleTexto = `${svc.name} · ${formatFecha(booking.date)} ${SLOT_LABELS[booking.start]}`;
     document.getElementById('conf-nombre').textContent = nombre;
